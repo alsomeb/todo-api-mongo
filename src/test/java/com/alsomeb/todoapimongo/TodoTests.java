@@ -31,8 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 @DataMongoTest
 public class TodoTests {
 
-    private MongoTemplate mongoTemplate;
-    private TodoRepository todoRepository;
+    private final MongoTemplate mongoTemplate;
+    private final TodoRepository todoRepository;
 
     @Autowired
     public TodoTests(MongoTemplate mongoTemplate, TodoRepository todoRepository) {
@@ -78,6 +78,52 @@ public class TodoTests {
         assertEquals("test", todosList.get(0).getDesc());
         assertEquals("test2", todosList.get(1).getDesc());
         assertEquals("test3", todosList.get(2).getDesc());
+    }
+
+    @Test
+    void testSearchTodoByCategoryIsCorrect() {
+        String category = "Java";
+
+        // Given
+        var listOfTodos = List.of(
+                new Todo("testDesc", category),
+                new Todo("testDesc2", category),
+                new Todo("testDesc3", category)
+        );
+        mongoTemplate.insertAll(listOfTodos);
+
+        // when
+        var listOfTodosToTest = todoRepository.findTodoByCategory(category);
+
+        // then
+        assertThat(listOfTodosToTest)
+                .extracting(Todo::getCategory)
+                .contains(category)
+                .doesNotContainNull()
+                .doesNotContain("test");
+    }
+
+    @Test
+    void testSearchTodoByDescIsCorrect() {
+        String desc = "Hello my friends";
+
+        // Given
+        var listOfTodos = List.of(
+                new Todo(desc, "test"),
+                new Todo(desc, "java"),
+                new Todo(desc, "javascript")
+        );
+        mongoTemplate.insertAll(listOfTodos);
+
+        // when
+        var listOfTodosToTest = todoRepository.findTodoByDesc(desc);
+
+        // then
+        assertThat(listOfTodosToTest)
+                .extracting(Todo::getDesc)
+                .contains(desc)
+                .doesNotContainNull()
+                .doesNotContain("test");
     }
 
     @Test
