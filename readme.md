@@ -1,4 +1,4 @@
-## This is a side project I made for a React Native Todo App ##
+## This is a side project API I made for a React Native Todo App ##
 
 Project Includes:
 - Swagger API Doc UI available ../api/todo/swagger
